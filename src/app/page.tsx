@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { AddProductForm, RunCheckButton } from "./ui";
+import { AddProductForm, RunCheckButton, PurchasesPanel } from "./ui";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +29,28 @@ export default async function Dashboard() {
   const soldNet = purchases
     .filter((p) => p.soldPrice != null)
     .reduce((acc, p) => acc + ((p.soldPrice ?? 0) - p.unitCost * p.qty - (p.fees ?? 0)), 0);
+  const capitalOut = purchases
+    .filter((p) => p.soldPrice == null)
+    .reduce((acc, p) => acc + p.unitCost * p.qty, 0);
+
+  const purchaseRows = purchases.map((p) => ({
+    id: p.id,
+    name: p.name,
+    retailer: p.retailer,
+    qty: p.qty,
+    unitCost: p.unitCost,
+    status: p.status,
+    listPrice: p.listPrice,
+    soldPrice: p.soldPrice,
+    fees: p.fees,
+    purchasedAt: p.purchasedAt.toISOString(),
+  }));
+  const productRows = products.map((p) => ({
+    id: p.id,
+    name: p.name,
+    retailer: p.retailer,
+    msrp: p.msrp,
+  }));
 
   return (
     <main className="wrap">
@@ -49,8 +71,8 @@ export default async function Dashboard() {
       <div className="stats">
         <div className="stat"><div className="n">{products.length}</div><div className="l">Watched</div></div>
         <div className="stat"><div className="n" style={{ color: inStock ? "var(--green)" : undefined }}>{inStock}</div><div className="l">In stock now</div></div>
-        <div className="stat"><div className="n">{events.length ? events.length : 0}</div><div className="l">Recent landings</div></div>
         <div className="stat"><div className="n">{purchases.length}</div><div className="l">Purchases</div></div>
+        <div className="stat"><div className="n">{money(capitalOut)}</div><div className="l">Capital out</div></div>
         <div className="stat"><div className="n" style={{ color: soldNet >= 0 ? "var(--green)" : "var(--red)" }}>{money(soldNet)}</div><div className="l">Net P&amp;L (sold)</div></div>
       </div>
 
@@ -110,6 +132,11 @@ export default async function Dashboard() {
             ))}
           </tbody>
         </table>
+      </section>
+
+      <section className="section">
+        <h2>Inventory &amp; P&amp;L</h2>
+        <PurchasesPanel products={productRows} purchases={purchaseRows} />
       </section>
 
       <section className="section">

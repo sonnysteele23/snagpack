@@ -1,0 +1,23 @@
+name: SnagPack scan
+
+# Scheduled restock scan. GitHub's minimum cron granularity is ~5 minutes
+# (and runs can be delayed under load). For true seconds-level drop-sniping,
+# run the monitor as a persistent worker instead of cron — see README.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger monitor
+        env:
+          URL: ${{ secrets.SNAGPACK_MONITOR_URL }}   # e.g. https://snagpack.vercel.app/api/monitor
+          SECRET: ${{ secrets.MONITOR_SECRET }}
+        run: |
+          if [ -z "$URL" ]; then echo "SNAGPACK_MONITOR_URL secret not set"; exit 1; fi
+          code=$(curl -s -o /tmp/out.json -w "%{http_code}" -X POST "$URL" -H "x-monitor-secret: $SECRET")
+          echo "HTTP $code"; cat /tmp/out.json
+          [ "$code" = "200" ] || exit 1
