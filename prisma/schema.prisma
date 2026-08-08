@@ -1,0 +1,79 @@
+// SnagPack data model.
+// SQLite for local dev — swap `provider`/DATABASE_URL for postgresql on Vercel.
+// Note: SQLite doesn't support Prisma enums, so status-like fields are plain strings
+// with the allowed values documented inline.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// A product we watch across a retailer. Adding a source = inserting a row (config, not code).
+model Product {
+  id        String   @id @default(cuid())
+  name      String
+  retailer  String // adapter id: "bestbuy" | "generic" | "target" | "walmart" | ...
+  url       String // product page or API-resolvable URL
+  sku       String? // retailer SKU/DPCI when known (required for API adapters)
+  category  String   @default("OTHER") // POKEMON | BASEBALL | FOOTBALL | BASKETBALL | OTHER
+  msrp      Float? // what we pay at retail
+  marketPrice Float? // expected resale (comps) — feeds the margin decision
+
+  // Generic-scraper signals: substrings that indicate stock state on the page.
+  inStockMatch    String? // e.g. "Add to cart"
+  outOfStockMatch String? // e.g. "Out of stock"
+
+  active        Boolean  @default(true)
+  lastInStock   Boolean  @default(false)
+  lastPrice     Float?
+  lastCheckedAt DateTime?
+  lastError     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events    RestockEvent[]
+  purchases Purchase[]
+
+  @@index([active])
+}
+
+// Fired the moment a product transitions out-of-stock -> in-stock.
+model RestockEvent {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  detectedAt DateTime @default(now())
+  price      Float?
+  // ALERTED | CART_BUILT | PURCHASED | SKIPPED_MARGIN | FAILED
+  action     String   @default("ALERTED")
+  note       String?
+
+  @@index([detectedAt])
+}
+
+// Inventory + P&L ledger. One row per buy; tracked through to sold.
+model Purchase {
+  id          String   @id @default(cuid())
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  name        String
+  retailer    String
+  qty         Int      @default(1)
+  unitCost    Float
+  purchasedAt DateTime @default(now())
+  orderRef    String?
+  // ORDERED | IN_TRANSIT | RECEIVED | LISTED | SOLD | RETURNED
+  status      String   @default("ORDERED")
+  listPrice   Float?
+  soldPrice   Float?
+  fees        Float?
+  soldAt      DateTime?
+  note        String?
+
+  @@index([status])
+}

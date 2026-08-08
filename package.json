@@ -1,0 +1,28 @@
+{
+  "name": "snagpack",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Scan retailers for sealed trading-card packs, detect the instant they land, alert + assisted/auto checkout, and track buy/sell P&L.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "monitor:once": "tsx scripts/monitor-once.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.1.0",
+    "next": "^15.1.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "prisma": "^6.1.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
