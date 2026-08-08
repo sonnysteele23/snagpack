@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    // Prisma client is external to the server bundle.
-    serverComponentsExternalPackages: ["@prisma/client", "prisma"],
-  },
+  // Keep Prisma out of the server bundle (Next 15 stable key).
+  serverExternalPackages: ["@prisma/client", "prisma"],
 };
 
 export default nextConfig;

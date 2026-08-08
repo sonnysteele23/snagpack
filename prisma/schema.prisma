@@ -1,15 +1,16 @@
 // SnagPack data model.
-// SQLite for local dev — swap `provider`/DATABASE_URL for postgresql on Vercel.
-// Note: SQLite doesn't support Prisma enums, so status-like fields are plain strings
-// with the allowed values documented inline.
+// Postgres (Vercel/Neon). Uses Neon's Prisma-optimized pooled URL at runtime and
+// the non-pooling direct URL for migrations/db push (the standard Neon+Prisma+Vercel
+// setup). Both vars are injected by the Neon Marketplace integration.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 // A product we watch across a retailer. Adding a source = inserting a row (config, not code).
