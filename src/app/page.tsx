@@ -54,9 +54,12 @@ export default async function Dashboard() {
 
   return (
     <main className="wrap">
-      <div className="brand">
-        <h1>SnagPack</h1>
-        <span className="tag">sealed card pack radar</span>
+      <div className="brand" style={{ justifyContent: "space-between", width: "100%" }}>
+        <span style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+          <h1>SnagPack</h1>
+          <span className="tag">sealed card pack radar</span>
+        </span>
+        <a href="/api/auth/logout" className="note" style={{ fontSize: 12 }}>Log out</a>
       </div>
       <p className="sub">
         Watch retailers for sealed packs, catch the drop the instant it lands, track the flip.
