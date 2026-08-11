@@ -27,6 +27,21 @@ Append-only record of decisions, verified facts, and open questions.
   Big retailers use Akamai/HUMAN bot-detection + purchase limits; unattended
   auto-checkout violates ToS and is unreliable without evasion infra we won't build.
 
+## 2026-08-11 — Local browser-worker shipped (free Target/Walmart scanning)
+
+- `worker/` Playwright script runs a real Chrome on the user's machine, reads the PRIMARY
+  buy-button state (position heuristic, not naive full-page text), reports to the app.
+- Endpoints: `GET /api/worker/tasks` + `POST /api/worker/report` (MONITOR_SECRET auth,
+  middleware-allowlisted). `applyStock()` extracted from monitor.ts, shared by both.
+- ✅ Verified: real browser loads Target with NO 403 (Bowman Blaster $59.99, "Out of
+  stock", disabled Add-to-cart — read correctly). tasks endpoint returns 4 Target/Walmart
+  products with secret (401 without). report endpoint processed a reading (HTTP 200).
+- MONITOR_SECRET reset to a known value + redeployed so the worker can auth (value NOT
+  recorded here — public repo; it's in the run instructions / private memory).
+- Repo is now PUBLIC. Live app: https://snagpack.vercel.app (login Welcome13@).
+- Still open: Best Buy free API key (cloud adapter ready); curate FIRST-PARTY listings
+  (several seeded URLs are 3rd-party marketplace resellers at markup, not MSRP retail).
+
 ## 2026-08-07 — Real products seeded + scanning reality confirmed (receipts)
 
 **What's true**
