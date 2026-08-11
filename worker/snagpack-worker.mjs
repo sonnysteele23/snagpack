@@ -72,8 +72,12 @@ async function checkPage(context, task) {
     await page.waitForTimeout(2500 + Math.random() * 1500);
 
     const html = (await page.content()).toLowerCase();
-    if (/access denied|verify you are a human|are you a robot|px-captcha|\/captcha\?/i.test(html)) {
-      return { id: task.id, inStock: false, note: "bot challenge — run HEADLESS=false once to clear" };
+    if (
+      /pardon our interruption|access to this page has been denied|access denied|verify you are a human|are you a robot|px-captcha|robot or human\?|unusual traffic/i.test(
+        html,
+      )
+    ) {
+      return { id: task.id, inStock: false, note: "bot challenge — run with HEADLESS=false once to clear it" };
     }
 
     const p = await page.evaluate(pageProbe);
