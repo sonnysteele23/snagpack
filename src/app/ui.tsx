@@ -93,10 +93,7 @@ export function RunCheckButton() {
   async function run() {
     setRunning(true);
     setMsg(null);
-    const res = await fetch("/api/monitor", {
-      method: "POST",
-      headers: { "x-monitor-secret": "dev-secret" },
-    });
+    const res = await fetch("/api/scan", { method: "POST" });
     const data = await res.json();
     setRunning(false);
     setMsg(
