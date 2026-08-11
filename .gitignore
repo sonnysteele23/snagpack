@@ -10,3 +10,5 @@ prisma/dev.db-journal
 .DS_Store
 next-env.d.ts
 .vercel
+worker/.profile
+worker/node_modules

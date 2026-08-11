@@ -1,0 +1,14 @@
+{
+  "name": "snagpack-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local browser-worker: checks Target/Walmart stock from a real Chrome and reports to SnagPack.",
+  "scripts": {
+    "start": "node snagpack-worker.mjs",
+    "setup": "npm install && npx playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.49.1"
+  }
+}
