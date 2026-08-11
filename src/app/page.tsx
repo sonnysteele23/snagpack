@@ -100,9 +100,19 @@ export default async function Dashboard() {
                 <td>{p.retailer}</td>
                 <td><span className="pill cat">{p.category}</span></td>
                 <td>
-                  {p.lastError ? <span className="pill err" title={p.lastError}>error</span>
-                    : p.lastInStock ? <span className="pill in">in stock</span>
-                    : <span className="pill out">out</span>}
+                  {!p.lastCheckedAt ? (
+                    <span className="pill out" title="Never scanned yet (Best Buy needs an API key; Target/Walmart need the local worker)">not checked</span>
+                  ) : p.lastError ? (
+                    /challenge|blocked|bot|403|captcha/i.test(p.lastError) ? (
+                      <span className="pill blk" title={p.lastError}>blocked</span>
+                    ) : (
+                      <span className="pill err" title={p.lastError}>error</span>
+                    )
+                  ) : p.lastInStock ? (
+                    <span className="pill in">in stock</span>
+                  ) : (
+                    <span className="pill out">out</span>
+                  )}
                 </td>
                 <td className="num">{money(p.msrp)}</td>
                 <td className="num">{money(p.marketPrice)}</td>
