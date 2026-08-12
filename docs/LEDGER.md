@@ -27,6 +27,18 @@ Append-only record of decisions, verified facts, and open questions.
   Big retailers use Akamai/HUMAN bot-detection + purchase limits; unattended
   auto-checkout violates ToS and is unreliable without evasion infra we won't build.
 
+## 2026-08-11 — Assisted checkout (opt-in, in user's own browser)
+
+- Sonny chose "assisted final-click" (not full-auto, not alert-only). REFUSED path stays
+  refused: no cloud bot / CAPTCHA-solving / proxy / fake-account evasion.
+- Worker BUY_MODE=assisted: on a landing, drives the user's OWN logged-in Target session
+  → add to cart → open checkout → STOPS at "Place your order" (never clicks it). Ships to
+  user via their saved address. Requires HEADLESS=false + signed-in Target profile.
+- BUY_TEST_URL for a dry run (test vs in-stock Series 2 Mega Box A-1011011003).
+- ⚠️ UNVERIFIED end-to-end — can't test without Sonny's logged-in account + a live buyable
+  item. Fail-safe by design (leaves window at furthest step; never auto-places order).
+- Honest caveats surfaced: ToS violation (small ban risk), checkout CAPTCHA can stop it.
+
 ## 2026-08-11 — First-party curation + Discord alerts
 
 **Curation finding (verified via live browser check of seller):**
