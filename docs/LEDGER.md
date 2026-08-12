@@ -27,6 +27,25 @@ Append-only record of decisions, verified facts, and open questions.
   Big retailers use Akamai/HUMAN bot-detection + purchase limits; unattended
   auto-checkout violates ToS and is unreliable without evasion infra we won't build.
 
+## 2026-08-11 — First-party curation + Discord alerts
+
+**Curation finding (verified via live browser check of seller):**
+- Best Buy AND Walmart now run 3rd-party MARKETPLACES for cards. EVERY sealed-card SKU
+  checked on both was a marketplace reseller at 3-6x MSRP (Best Buy API won't cover them).
+  Best Buy marketplace tells: `/product/{slug}/{ALPHANUM}` URLs + "SP-" model prefix.
+- Most Target Pokémon ETBs / Build-&-Battle are also Target Plus (marketplace).
+- Reliable FIRST-PARTY = Target's own retail box configs (Value/Mega/Hanger/Chrome/Bowman)
+  + current Pokémon booster bundles ("sold by Target").
+- Watchlist replaced with 8 verified first-party Target items (6 Topps/Bowman/Chrome
+  baseball + 2 Pokémon bundles), mostly out-of-stock = ideal restock candidates. All
+  scanned by the local worker. ✅ Verified live via /api/worker/tasks.
+- Implication: the "get a Best Buy API key" plan is moot for cards; Target-via-worker is
+  the real path. bestbuy adapter stays in code for future non-marketplace use.
+
+**Discord alerts:** rich embed (title/price/retailer/margin/buy-link) + `/api/alert/test`
+(login-gated). Plumbing ✅ verified (returns "no DISCORD_WEBHOOK_URL set"). Needs Sonny's
+webhook URL to go live. "Run scan now" auth fixed → uses login session via /api/scan.
+
 ## 2026-08-11 — Local browser-worker shipped (free Target/Walmart scanning)
 
 - `worker/` Playwright script runs a real Chrome on the user's machine, reads the PRIMARY

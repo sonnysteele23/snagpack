@@ -2,98 +2,98 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// REAL products with live URLs (verified 2026-08-07 via web search).
-// Scanning reality per retailer:
-//  - bestbuy: official API (real, reliable) — needs BESTBUY_API_KEY + numeric sku.
-//  - target/walmart: real product pages (links work in a browser), but server-side
-//    stock scans are bot-blocked (Akamai 403 + CAPTCHA). Real-time checks there need
-//    a headless-browser worker or a paid feed — the generic adapter will honestly
-//    report the block rather than fake stock.
+// FIRST-PARTY watchlist (verified 2026-08-11 by live browser check of the seller).
+//
+// Finding: Best Buy and Walmart now run third-party Marketplaces for trading cards —
+// their card listings that surface in search are almost all marketplace resellers at
+// 3-6x MSRP (and Best Buy's API doesn't cover marketplace items). The reliable
+// first-party source is Target's own retail box configurations (Value/Mega/Hanger/
+// Chrome/Bowman boxes) and current Pokémon booster bundles — all "sold by Target".
+//
+// All of these are scanned by the LOCAL WORKER (retailer "target"). Most are currently
+// out of stock, which is exactly what a restock monitor wants.
 async function main() {
   await prisma.product.deleteMany();
 
   await prisma.product.createMany({
     data: [
-      // --- Best Buy (official API path; scans real once BESTBUY_API_KEY is set) ---
       {
-        name: "Pokémon TCG: 151 Elite Trainer Box",
-        retailer: "bestbuy",
-        url: "https://www.bestbuy.com/site/pokemon-trading-card-game-151-elite-trainer-box/6548366.p?skuId=6548366",
-        sku: "6548366",
-        category: "POKEMON",
-        msrp: 49.99,
-        marketPrice: 75.0,
-      },
-      {
-        name: "Pokémon TCG: Silver Tempest Elite Trainer Box",
-        retailer: "bestbuy",
-        url: "https://www.bestbuy.com/site/pokemon-trading-card-game-silver-tempest-elite-trainer-box/6521113.p?skuId=6521113",
-        sku: "6521113",
-        category: "POKEMON",
-        msrp: 49.99,
-        marketPrice: 60.0,
-      },
-      {
-        name: "Pokémon TCG: Sword & Shield Elite Trainer Box",
-        retailer: "bestbuy",
-        url: "https://www.bestbuy.com/site/pokemon-trading-card-game-sword-shield-elite-trainer-box/6397125.p?skuId=6397125",
-        sku: "6397125",
-        category: "POKEMON",
-        msrp: 49.99,
-        marketPrice: 55.0,
-      },
-
-      // --- Target (real links; server scan bot-blocked → honest error until a worker/feed is added) ---
-      {
-        name: "2025 Topps Bowman Baseball Value Blaster Box",
+        name: "2026 Topps MLB Series 1 Baseball Value Box",
         retailer: "target",
-        url: "https://www.target.com/p/topps-2025-bowman-baseball-value-blaster-box/-/A-1007746656",
-        sku: "1007746656", // Target TCIN
+        url: "https://www.target.com/p/2026-topps-mlb-series-1-baseball-trading-card-value-box/-/A-95179368",
+        sku: "95179368",
         category: "BASEBALL",
-        msrp: 25.99,
-        marketPrice: 42.0,
-        inStockMatch: "add to cart",
-        outOfStockMatch: "out of stock",
+        msrp: 24.99,
+        marketPrice: 34.99,
       },
       {
-        name: "2025 Topps MLB Bowman Baseball Mega Box",
+        name: "2026 Topps MLB Series 1 Baseball Mega Box",
         retailer: "target",
-        url: "https://www.target.com/p/2025-topps-mlb-bowman-baseball-trading-card-mega-box/-/A-94742626",
-        sku: "94742626",
+        url: "https://www.target.com/p/2026-topps-mlb-series-1-baseball-trading-card-mega-box/-/A-95179363",
+        sku: "95179363",
         category: "BASEBALL",
-        msrp: 44.99,
-        marketPrice: 70.0,
-        inStockMatch: "add to cart",
-        outOfStockMatch: "out of stock",
-      },
-      {
-        name: "Pokémon TCG: Mega Evolution — Ascended Heroes Elite Trainer Box",
-        retailer: "target",
-        url: "https://www.target.com/p/pok-mon-tcg-mega-evolution-ascended-heroes-elite-trainer-box/-/A-1010148053",
-        sku: "1010148053",
-        category: "POKEMON",
         msrp: 49.99,
-        marketPrice: 65.0,
-        inStockMatch: "add to cart",
-        outOfStockMatch: "out of stock",
+        marketPrice: 69.99,
       },
-
-      // --- Walmart (real link; server scan bot-blocked, same as Target) ---
       {
-        name: "Pokémon TCG: Prismatic Evolutions Booster Bundle",
-        retailer: "walmart",
-        url: "https://www.walmart.com/ip/Pokemon-TCG-Scarlet-Violet-Prismatic-Evolutions-Booster-Bundle/15531420870",
+        name: "2026 Topps MLB Series 2 Baseball Mega Box",
+        retailer: "target",
+        url: "https://www.target.com/p/2026-topps-mlb-series-2-baseball-trading-card-mega-box/-/A-1011011003",
+        sku: "1011011003",
+        category: "BASEBALL",
+        msrp: 49.99,
+        marketPrice: 54.99,
+      },
+      {
+        name: "2026 Topps MLB Series 1 Baseball Hanger Box",
+        retailer: "target",
+        url: "https://www.target.com/p/2026-topps-mlb-series-1-baseball-trading-card-hanger-box/-/A-95179371",
+        sku: "95179371",
+        category: "BASEBALL",
+        msrp: 14.99,
+        marketPrice: 19.99,
+      },
+      {
+        name: "2026 Topps MLB Bowman Baseball Value Box",
+        retailer: "target",
+        url: "https://www.target.com/p/topps-mlb-bowman-baseball-foil-box/-/A-1011060501",
+        sku: "1011060501",
+        category: "BASEBALL",
+        msrp: 29.99,
+        marketPrice: 44.99,
+      },
+      {
+        name: "2026 Topps MLB Chrome Baseball Value Box",
+        retailer: "target",
+        url: "https://www.target.com/p/topps-2026-mlb-chrome-baseball-foil-box/-/A-1012055699",
+        sku: "1012055699",
+        category: "BASEBALL",
+        msrp: 39.99,
+        marketPrice: 49.99,
+      },
+      {
+        name: "Pokémon TCG: Scarlet & Violet—Destined Rivals Booster Bundle",
+        retailer: "target",
+        url: "https://www.target.com/p/pok-233-mon-trading-card-game-scarlet-38-violet-8212-destined-rivals-booster-bundle/-/A-94300067",
+        sku: "94300067",
         category: "POKEMON",
-        msrp: 26.94,
-        marketPrice: 55.0,
-        inStockMatch: "add to cart",
-        outOfStockMatch: "out of stock",
+        msrp: 29.99,
+        marketPrice: 39.99,
+      },
+      {
+        name: "Pokémon TCG: Scarlet & Violet—Surging Sparks Booster Bundle",
+        retailer: "target",
+        url: "https://www.target.com/p/pokemon-trading-card-game-scarlet-38-violet-surging-sparks-booster-bundle/-/A-91619929",
+        sku: "91619929",
+        category: "POKEMON",
+        msrp: 27.99,
+        marketPrice: 44.99,
       },
     ],
   });
 
   const count = await prisma.product.count();
-  console.log(`Seeded ${count} REAL watched products.`);
+  console.log(`Seeded ${count} first-party Target products.`);
 }
 
 main()
