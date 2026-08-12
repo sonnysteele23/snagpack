@@ -1,4 +1,4 @@
-// Push a restock alert. Discord webhook if configured, else console.
+// Push a restock alert. Rich Discord embed if DISCORD_WEBHOOK_URL is set, else console.
 // Add SMS/push here later (Twilio, ntfy, etc.) — same signature.
 
 export type Alert = {
@@ -19,12 +19,36 @@ export async function sendAlert(a: Alert): Promise<void> {
     console.log("[alert]", line);
     return;
   }
+
+  const fields = [
+    { name: "Retailer", value: a.retailer || "—", inline: true },
+    { name: "Price", value: a.price != null ? `$${a.price.toFixed(2)}` : "—", inline: true },
+  ];
+  if (a.note) fields.push({ name: "Note", value: a.note, inline: false });
+  if (a.cartUrl) fields.push({ name: "Buy now", value: `[Open cart →](${a.cartUrl})`, inline: false });
+
+  const payload = {
+    // Plain content shows in the phone push preview even before the embed renders.
+    content: `🚨 **LANDED** — ${a.name}`,
+    embeds: [
+      {
+        title: `🟢 ${a.name}`,
+        url: a.cartUrl || undefined,
+        color: 0x2ec26a, // green
+        fields,
+        footer: { text: "SnagPack" },
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  };
+
   try {
-    await fetch(webhook, {
+    const res = await fetch(webhook, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ content: line }),
+      body: JSON.stringify(payload),
     });
+    if (!res.ok) console.error("[alert] webhook", res.status, "\n", line);
   } catch (e) {
     console.error("[alert] webhook failed:", (e as Error).message, "\n", line);
   }
