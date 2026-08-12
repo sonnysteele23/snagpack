@@ -40,7 +40,38 @@ Run once with `HEADLESS=false CHANNEL=chrome npm start`, solve the challenge in 
 window that opens (and/or sign into Target/Walmart there). The `.profile` folder keeps
 that session, so later headless runs reuse it.
 
+## Assisted checkout (opt-in)
+
+When an item lands, the worker can **add it to your cart and open the checkout screen in
+your own browser, then stop** — you review and click "Place your order" yourself. It
+**never** places the order. This runs in your own Target session (your account, card,
+address), so it ships to you.
+
+**One-time prep:** run the worker with `HEADLESS=false`, and in the Chrome window that
+opens, **sign into Target** and make sure you have a **saved shipping address + payment
+method**. The `./.profile` folder keeps that session.
+
+**Run with assisted buy:**
+
+```bash
+HEADLESS=false BUY_MODE=assisted MONITOR_SECRET='your-monitor-secret' npm start
+```
+
+**Try the flow now** (dry run against a specific product, e.g. one that's in stock) —
+it will add to cart and open checkout so you can see it work, without waiting for a drop:
+
+```bash
+HEADLESS=false BUY_MODE=assisted \
+  BUY_TEST_URL='https://www.target.com/p/2026-topps-mlb-series-2-baseball-trading-card-mega-box/-/A-1011011003' \
+  MONITOR_SECRET='your-monitor-secret' npm start
+```
+
+Then finish the purchase by clicking **Place your order** in the window.
+
 ## Notes
 
 - This is your own browser + IP at a polite interval — not evasion infrastructure.
+- SnagPack never clicks "Place your order" — you always approve the money.
+- Automated purchasing is against Target's ToS; there's a small account/card ban risk,
+  and checkout can hit a CAPTCHA. Assisted mode (a human finishing) trips fewer flags.
 - Only runs while your machine is on. For 24/7 coverage, use a paid stock feed instead.
